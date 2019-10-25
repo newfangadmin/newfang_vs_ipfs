@@ -55,6 +55,13 @@
 
 <script>
   const ipfsClient = require('ipfs-http-client');
+
+  // import '../js/newfang_uploader.js';
+  // import '../js/newfang_downloader.js';
+
+  const Uploader = window.newfang_uploader.default
+  // const Downloader = window.newfang_downloader.default
+
   const config = {
     "host": "13.232.245.32",
           "host2": "13.235.113.102",
@@ -79,6 +86,7 @@
   param.host = config.host3;
   // let ipfs3 = ipfsClient(param);
 
+  let convergence = Uploader.generate_convergence();
 
 
   export default {
@@ -152,6 +160,30 @@
         this.nfUpStatus = "Uploading...";
         this.ipfsUpTime = (end-start)/1000;
         // nf upload code
+        let start_time_newfang = Date.now();
+        const uploader = new Uploader({
+          file, // HTML5 file object
+          convergence
+        });
+
+        uploader.on('upload_complete', () => {
+          let end_time_newfang = Date.now();
+          // console.log(start_time_newfang, end_time_newfang)
+          this.nfUpTime = (end_time_newfang -start_time_newfang)/1000;
+          this.nfUp = false;
+          // formdata.set("start_time_newfang", start_time_newfang);
+          // formdata.set("end_time_newfang", end_time_newfang)
+          // axios({
+          //   method: 'post',
+          //   url: 'http://13.232.245.32:8000/log/transaction/',
+          //   data: formdata,
+          //   config: { headers: { 'Content-Type': 'multipart/form-data' } }
+          // })
+          // this.active = false;
+        });
+
+        uploader.start_upload()
+
 
         // on success, update this.nfUp to false
         // after completion, update this.active to false
