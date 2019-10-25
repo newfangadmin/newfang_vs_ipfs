@@ -65,8 +65,8 @@
   // import '../js/newfang_uploader.js';
   // import '../js/newfang_downloader.js';
 
-  const Uploader = window.newfang_uploader.default
-  // const Downloader = window.newfang_downloader.default
+  const Uploader = window.newfang_uploader.default;
+  const Downloader = window.newfang_downloader.default;
 
   const config = {
     "host": "13.232.245.32",
@@ -123,7 +123,8 @@
         ipfsDownTime: "--",
         nfDownTime: "--",
         nfUpStatus: "Waiting for IPFS upload to finish up.",
-        hash: ""
+        hash: "",
+        uri: ""
       }
     },
     methods: {
@@ -173,7 +174,8 @@
             convergence
           });
 
-          uploader.on('upload_complete', () => {
+          uploader.on('upload_complete', (uri) => {
+            this.uri = uri;
             let end_time_newfang = Date.now();
             // console.log(start_time_newfang, end_time_newfang)
             this.nfUpTime = (end_time_newfang - start_time_newfang) / 1000;
@@ -221,6 +223,38 @@
         this.active = true
         this.nfDown = true
         // nf download code
+        let downloader = new Downloader(this.uri, {
+          downloadPath: '/path/to/download',
+          type: 'Download',
+          useWorkers: true
+        });
+
+        let start = Date.now();
+          downloader.on('download_complete', () => {
+              let end = Date.now();
+              this.nfDown = false;
+              this.nfDownTime= (end-start)/1000
+              // console.log('download complete newfang', time(start_time_newfang, end_time_newfang))
+              // formdata.set("start_time_newfang", start_time_newfang);
+              // formdata.set("end_time_newfang", end_time_newfang);
+              //
+              // axios({
+              //     method: 'post',
+              //     url: 'http://13.232.245.32:8000/log/transaction/',
+              //     data: formdata,
+              //     config: { headers: { 'Content-Type': 'multipart/form-data' } }
+              // }).then(function (response) {
+              //     //handle success
+              //     console.log(response)
+              // }).catch(function (response) {
+              //     //handle error
+              //     console.log(response)
+              // })
+
+          });
+        downloader.start_download('newfang.' + this.fileType)
+
+
         // on success, update this.nfDown, this.active to false
         // write to db
       }
