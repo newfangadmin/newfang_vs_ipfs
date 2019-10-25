@@ -54,8 +54,34 @@
 </template>
 
 <script>
+  const ipfsClient = require('ipfs-http-client');
+  const config = {
+    "host": "13.232.245.32",
+          "host2": "13.235.113.102",
+          "host3": "52.66.197.133",
+          "port": 5001,
+          "protocol": "http",
+          "gateway": "8080",
+          "transaction_url": "http://13.232.245.32:8000/"
+  };
 
-export default {
+  let param = {
+    host: config.host,
+    port: config.port,
+    protocol: config.protocol
+  };
+
+  let ipfs = ipfsClient(param);
+
+  param.host = config.host2;
+  // let ipfs2 = ipfsClient(param);
+
+  param.host = config.host3;
+  // let ipfs3 = ipfsClient(param);
+
+
+
+  export default {
   name: 'UpDown',
   filters: {
     fileSizeFilter(val) {
@@ -82,7 +108,8 @@ export default {
       nfUpTime: "--",
       ipfsDownTime: "--",
       nfDownTime: "--",
-      nfUpStatus: "Waiting for IPFS upload to finish up."
+      nfUpStatus: "Waiting for IPFS upload to finish up.",
+      hash: ""
     }
   },
   methods: {
@@ -108,18 +135,24 @@ export default {
       }
     },
 
-    handleFileUpload() {
-      const file = this.$refs.fileSelect.files[0]
+    async handleFileUpload() {
+      const file = this.$refs.fileSelect.files[0];
       if (file !== undefined) {
-        this.active = true
-        // this.ipfsUp = true
-        // this.nfUp = true
-        this.fileSize = file.size
-        this.fileType = file.type
+        this.active = true;
+        this.ipfsUp = true;
+        this.nfUp = true;
+        this.fileSize = file.size;
+        this.fileType = file.type;
         // ipfs upload code
-        // on success, update this.ipfsUp to false and update this.nfUpStatus to "Uploading..."
-        // on success, update the this.ipfsUpTime with the time taken to upload
+        let start = Date.now();
+        let result = await ipfs.add(file);
+        this.hash = result[0].hash;
+        let end = Date.now();
+        this.ipfsUp = false;
+        this.nfUpStatus = "Uploading...";
+        this.ipfsUpTime = (end-start)/1000;
         // nf upload code
+
         // on success, update this.nfUp to false
         // after completion, update this.active to false
         // write to db
