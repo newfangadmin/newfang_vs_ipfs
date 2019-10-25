@@ -158,6 +158,7 @@
           this.nfUp = true;
           this.fileSize = file.size;
           this.fileType = file.type;
+          this.fileName = file.name;
           // ipfs upload code
           let start = Date.now();
           let result = await ipfs2.add(file);
@@ -208,7 +209,7 @@
         var blob = new Blob([result[0].content], {type: this.fileType});
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
-        link.download = "ipfs";
+        link.download = this.fileName + "_ipfs";
         link.click();
         let end = Date.now();
         this.ipfsDown = false;
@@ -220,8 +221,8 @@
       },
 
       handleNFDownload() {
-        this.active = true
-        this.nfDown = true
+        this.active = true;
+        this.nfDown = true;
         // nf download code
         let downloader = new Downloader(this.uri, {
           downloadPath: '/path/to/download',
@@ -230,29 +231,29 @@
         });
 
         let start = Date.now();
-          downloader.on('download_complete', () => {
-              let end = Date.now();
-              this.nfDown = false;
-              this.nfDownTime= (end-start)/1000
-              // console.log('download complete newfang', time(start_time_newfang, end_time_newfang))
-              // formdata.set("start_time_newfang", start_time_newfang);
-              // formdata.set("end_time_newfang", end_time_newfang);
-              //
-              // axios({
-              //     method: 'post',
-              //     url: 'http://13.232.245.32:8000/log/transaction/',
-              //     data: formdata,
-              //     config: { headers: { 'Content-Type': 'multipart/form-data' } }
-              // }).then(function (response) {
-              //     //handle success
-              //     console.log(response)
-              // }).catch(function (response) {
-              //     //handle error
-              //     console.log(response)
-              // })
+        downloader.on('download_complete', () => {
+          let end = Date.now();
+          this.nfDown = false;
+          this.nfDownTime = (end - start) / 1000
+          // console.log('download complete newfang', time(start_time_newfang, end_time_newfang))
+          // formdata.set("start_time_newfang", start_time_newfang);
+          // formdata.set("end_time_newfang", end_time_newfang);
+          //
+          // axios({
+          //     method: 'post',
+          //     url: 'http://13.232.245.32:8000/log/transaction/',
+          //     data: formdata,
+          //     config: { headers: { 'Content-Type': 'multipart/form-data' } }
+          // }).then(function (response) {
+          //     //handle success
+          //     console.log(response)
+          // }).catch(function (response) {
+          //     //handle error
+          //     console.log(response)
+          // })
 
-          });
-        downloader.start_download('newfang.' + this.fileType)
+        });
+        downloader.start_download(this.fileName + '_newfang.' + this.fileType)
 
 
         // on success, update this.nfDown, this.active to false
