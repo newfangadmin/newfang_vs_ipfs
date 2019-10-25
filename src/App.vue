@@ -1,28 +1,40 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" class="h-screen">
+    <Navbar />
+    <el-row :gutter="20">
+      <el-col :md="12" class="main">
+        <UpDown />
+      </el-col>
+      <el-col :md="12" class="main">
+        <History />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Navbar from './components/Navbar.vue'
+import UpDown from './components/UpDown.vue'
+import History from './components/History.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    UpDown,
+    Navbar,
+    History
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+
+.main {
+  height: calc(100vh - 48px);
 }
 </style>
