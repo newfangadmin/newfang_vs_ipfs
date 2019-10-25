@@ -57,9 +57,6 @@
 
 export default {
   name: 'UpDown',
-  props: {
-    msg: String
-  },
   filters: {
     fileSizeFilter(val) {
       const digitCount = val.toString().length
@@ -115,15 +112,17 @@ export default {
       const file = this.$refs.fileSelect.files[0]
       if (file !== undefined) {
         this.active = true
-        this.ipfsUp = true
-        this.nfUp = true
+        // this.ipfsUp = true
+        // this.nfUp = true
         this.fileSize = file.size
         this.fileType = file.type
         // ipfs upload code
         // on success, update this.ipfsUp to false and update this.nfUpStatus to "Uploading..."
+        // on success, update the this.ipfsUpTime with the time taken to upload
         // nf upload code
         // on success, update this.nfUp to false
         // after completion, update this.active to false
+        // write to db
       }
     },
 
@@ -132,6 +131,8 @@ export default {
       this.ipfsDown = true
       // ipfs download code
       // on success, update this.ipfsDown, this.active to false
+      // on success, update this.ipfsDownTime with time taken to download
+      // write to db
     },
 
     handleNFDownload() {
@@ -139,6 +140,7 @@ export default {
       this.nfDown = true
       // nf download code
       // on success, update this.nfDown, this.active to false
+      // write to db
     }
   }
 }
