@@ -6,6 +6,12 @@
                 stripe
                 style="width: 100%">
         <el-table-column
+          prop="user"
+          label="User"
+          width="180"
+          align="center">
+        </el-table-column>
+        <el-table-column
           prop="actionType"
           label="Action Type"
           width="180"
@@ -61,7 +67,8 @@
           actionType: data[i].type,
           fileSize: this.fileSizeFilter(data[i].fileSize),
           ipfsTime: data[i].ipfsTime,
-          nfTime: data[i].nwTime
+          nfTime: data[i].nwTime,
+          user: data[i].user
         })
       }
     }

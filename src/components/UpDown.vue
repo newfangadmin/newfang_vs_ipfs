@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 text-center md:text-left">
-    <h1 class="text-4xl md:text-5xl font-display font-light">Test Newfang against IPFS</h1>
+    <h1 class="text-4xl md:text-5xl font-display font-light">Hi {{name}} test Newfang against IPFS</h1>
     <p class="font-body mb-4">...and see how our Uploads/Downloads compare.</p>
     <el-row class="mt-6">
       <el-col :span="24">
@@ -69,12 +69,15 @@
   const Downloader = window.newfang_downloader.default;
   const convergence = Uploader.generate_convergence();
   const axios = require('axios');
+  const UsernameGenerator = require('username-generator');
+
+  // window.axios = axios;
 
   export default {
     name: 'UpDown',
     filters: {
       fileSizeFilter(val) {
-        const digitCount = val.toString().length
+        const digitCount = val.toString().length;
         if (digitCount < 4) {
           return (val).toFixed(2) + " B"
         } else if (digitCount < 7) {
@@ -114,7 +117,10 @@
           host: "13.232.245.32",
           port: 5001,
           protocol: "http"
-        })
+        }),
+        dbId: "",
+        transaction_server_url: "http://13.232.245.32:8000/api/transactions/",
+        name: UsernameGenerator.generateUsername("_")
       }
     },
     methods: {
@@ -130,7 +136,7 @@
 
       handleUploadBtnClick() {
         if (!this.active) {
-          this.resetData()
+          this.resetData();
           this.$refs.fileSelect.click()
         } else {
           this.$message({
@@ -152,7 +158,7 @@
           // ipfs upload code
           let start = Date.now();
           let result = await this.ipfs2.add(file);
-          this.ipfs3.add(file);
+          await this.ipfs3.add(file);
           this.hash = result[0].hash;
           let end = Date.now();
           this.ipfsUp = false;
@@ -171,13 +177,13 @@
             // console.log(start_time_newfang, end_time_newfang)
             this.nfUpTime = (end_time_newfang - start_time_newfang) / 1000;
             this.nfUp = false;
-            await axios.post('http://13.232.245.32:8000/api/transactions/', {
+            await axios.post(this.transaction_server_url, {
               type: "upload",
               nwTime: this.nfUpTime,
               ipfsTime: this.ipfsUpTime,
-              user: "Saurav",
+              user: this.name,
               fileSize: this.fileSize
-            })
+            });
           });
 
           uploader.start_upload()
@@ -189,7 +195,26 @@
         }
       }
       ,
-
+      async downloadTransaction(){
+        if (!this.dbId) {
+          let res = await axios.post(this.transaction_server_url, {
+            type: "download",
+            nwTime: this.nfDownTime !== "--" ? this.nfDownTime : undefined,
+            ipfsTime: this.ipfsDownTime !== "--" ? this.ipfsDownTime : undefined,
+            user: this.name,
+            fileSize: this.fileSize
+          });
+          this.dbId = res.data.id;
+        } else {
+          await axios.put(this.transaction_server_url + this.dbId, {
+            type: "download",
+            nwTime: this.nfDownTime !== "--" ? this.nfDownTime : undefined,
+            ipfsTime: this.ipfsDownTime !== "--" ? this.ipfsDownTime : undefined,
+            user: this.name,
+            fileSize: this.fileSize
+          })
+        }
+      },
       async handleIPFSDownload() {
         this.active = true;
         this.ipfsDown = true;
@@ -207,10 +232,11 @@
         // on success, update this.ipfsDown, this.active to false
         // on success, update this.ipfsDownTime with time taken to download
         // write to db
+        this.downloadTransaction();
       }
       ,
 
-      handleNFDownload() {
+      async handleNFDownload() {
         this.active = true;
         this.nfDown = true;
         // nf download code
@@ -225,29 +251,15 @@
           let end = Date.now();
           this.nfDown = false;
           this.nfDownTime = (end - start) / 1000
-          // console.log('download complete newfang', time(start_time_newfang, end_time_newfang))
-          // formdata.set("start_time_newfang", start_time_newfang);
-          // formdata.set("end_time_newfang", end_time_newfang);
-          //
-          // axios({
-          //     method: 'post',
-          //     url: 'http://13.232.245.32:8000/log/transaction/',
-          //     data: formdata,
-          //     config: { headers: { 'Content-Type': 'multipart/form-data' } }
-          // }).then(function (response) {
-          //     //handle success
-          //     console.log(response)
-          // }).catch(function (response) {
-          //     //handle error
-          //     console.log(response)
-          // })
+          this.downloadTransaction();
 
         });
         downloader.start_download(this.fileName + '_newfang.' + this.fileType)
 
-
         // on success, update this.nfDown, this.active to false
         // write to db
+
+
       }
     }
   }
