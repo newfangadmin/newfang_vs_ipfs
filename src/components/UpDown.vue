@@ -68,30 +68,6 @@
   const Uploader = window.newfang_uploader.default;
   const Downloader = window.newfang_downloader.default;
 
-  const config = {
-    "host": "13.232.245.32",
-    "host2": "13.235.113.102",
-    "host3": "52.66.197.133",
-    "port": 5001,
-    "protocol": "http",
-    "gateway": "8080",
-    "transaction_url": "http://13.232.245.32:8000/"
-  };
-
-  let param = {
-    host: config.host,
-    port: config.port,
-    protocol: config.protocol
-  };
-
-  let ipfs = ipfsClient(param);
-
-  param.host = config.host2;
-  let ipfs2 = ipfsClient(param);
-
-  param.host = config.host3;
-  let ipfs3 = ipfsClient(param);
-
   let convergence = Uploader.generate_convergence();
 
 
@@ -124,7 +100,22 @@
         nfDownTime: "--",
         nfUpStatus: "Waiting for IPFS upload to finish up.",
         hash: "",
-        uri: ""
+        uri: "",
+        ipfs2: ipfsClient({
+          host: "13.235.113.102",
+          port: 5001,
+          protocol: "http"
+        }),
+        ipfs3: ipfsClient({
+          host: "52.66.197.133",
+          port: 5001,
+          protocol: "http"
+        }),
+        ipfs: ipfsClient({
+          host: "13.232.245.32",
+          port: 5001,
+          protocol: "http"
+        })
       }
     },
     methods: {
@@ -161,8 +152,8 @@
           this.fileName = file.name;
           // ipfs upload code
           let start = Date.now();
-          let result = await ipfs2.add(file);
-          ipfs3.add(file);
+          let result = await this.ipfs2.add(file);
+          this.ipfs3.add(file);
           this.hash = result[0].hash;
           let end = Date.now();
           this.ipfsUp = false;
@@ -205,7 +196,7 @@
         this.active = true;
         this.ipfsDown = true;
         let start = Date.now();
-        let result = await ipfs.get(this.hash);
+        let result = await this.ipfs.get(this.hash);
         var blob = new Blob([result[0].content], {type: this.fileType});
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
