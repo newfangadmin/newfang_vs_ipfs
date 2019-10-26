@@ -60,16 +60,15 @@
 </template>
 
 <script>
-  const ipfsClient = require('ipfs-http-client');
 
   // import '../js/newfang_uploader.js';
   // import '../js/newfang_downloader.js';
 
+  const ipfsClient = require('ipfs-http-client');
   const Uploader = window.newfang_uploader.default;
   const Downloader = window.newfang_downloader.default;
-
-  let convergence = Uploader.generate_convergence();
-
+  const convergence = Uploader.generate_convergence();
+  const axios = require('axios');
 
   export default {
     name: 'UpDown',
@@ -120,12 +119,12 @@
     },
     methods: {
       resetData() {
-        this.fileSize = 0
-        this.fileType = ""
-        this.ipfsUpTime = "--"
-        this.nfUpTime = "--"
-        this.ipfsDownTime = "--"
-        this.nfDownTime = "--"
+        this.fileSize = 0;
+        this.fileType = "";
+        this.ipfsUpTime = "--";
+        this.nfUpTime = "--";
+        this.ipfsDownTime = "--";
+        this.nfDownTime = "--";
         this.nfUpStatus = "Waiting for IPFS upload to finish up."
       },
 
@@ -166,21 +165,19 @@
             convergence
           });
 
-          uploader.on('upload_complete', (uri) => {
+          uploader.on('upload_complete', async (uri) => {
             this.uri = uri;
             let end_time_newfang = Date.now();
             // console.log(start_time_newfang, end_time_newfang)
             this.nfUpTime = (end_time_newfang - start_time_newfang) / 1000;
             this.nfUp = false;
-            // formdata.set("start_time_newfang", start_time_newfang);
-            // formdata.set("end_time_newfang", end_time_newfang)
-            // axios({
-            //   method: 'post',
-            //   url: 'http://13.232.245.32:8000/log/transaction/',
-            //   data: formdata,
-            //   config: { headers: { 'Content-Type': 'multipart/form-data' } }
-            // })
-            // this.active = false;
+            await axios.post('http://13.232.245.32:8000/api/transactions/', {
+              type: "upload",
+              nwTime: this.nfUpTime,
+              ipfsTime: this.ipfsUpTime,
+              user: "Saurav",
+              fileSize: this.fileSize
+            })
           });
 
           uploader.start_upload()
@@ -190,7 +187,8 @@
           // after completion, update this.active to false
           // write to db
         }
-      },
+      }
+      ,
 
       async handleIPFSDownload() {
         this.active = true;
@@ -209,7 +207,8 @@
         // on success, update this.ipfsDown, this.active to false
         // on success, update this.ipfsDownTime with time taken to download
         // write to db
-      },
+      }
+      ,
 
       handleNFDownload() {
         this.active = true;
