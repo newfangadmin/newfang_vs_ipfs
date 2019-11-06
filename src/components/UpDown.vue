@@ -158,7 +158,7 @@
           // ipfs upload code
           let start = Date.now();
           let result = await this.ipfs2.add(file);
-          this.ipfs3.add(file);
+          await this.ipfs3.add(file);
           this.hash = result[0].hash;
           let end = Date.now();
           this.ipfsUp = false;
