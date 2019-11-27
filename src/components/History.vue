@@ -60,12 +60,9 @@
       }
     },
     async mounted() {
-      window.data = "error";
-      window.axios = axios;
+      // window.axios = axios;
       let res = await axios.get("https://ipfs4.newfang.io/api/transactions/");
-      window.data = res;
       let data = res.data;
-      window.data = data;
       for (let i = 0; i < data.length; i++) {
         this.tableData.push({
           actionType: data[i].type,
