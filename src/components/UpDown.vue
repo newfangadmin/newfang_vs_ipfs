@@ -104,22 +104,22 @@
         hash: "",
         uri: "",
         ipfs2: ipfsClient({
-          host: "13.235.113.102",
-          port: 5001,
-          protocol: "http"
+          host: "ipfs2.newfang.io",
+          port: 443,
+          protocol: "https"
         }),
         ipfs3: ipfsClient({
-          host: "52.66.197.133",
-          port: 5001,
-          protocol: "http"
+          host: "ipfs3.newfang.io",
+          port: 443,
+          protocol: "https"
         }),
         ipfs: ipfsClient({
-          host: "13.232.245.32",
-          port: 5001,
-          protocol: "http"
+          host: "ipfs1.newfang.io",
+          port: 443,
+          protocol: "https"
         }),
         dbId: "",
-        transaction_server_url: "http://13.232.245.32:8000/api/transactions/",
+        transaction_server_url: "https://ipfs4.newfang.io/api/transactions/",
         name: UsernameGenerator.generateUsername("_")
       }
     },
@@ -157,8 +157,8 @@
           this.fileName = file.name;
           // ipfs upload code
           let start = Date.now();
-          let result = await this.ipfs2.add(file);
-          await this.ipfs3.add(file);
+          let result = await this.ipfs3.add(file);
+          await this.ipfs2.add(file);
           this.hash = result[0].hash;
           let end = Date.now();
           this.ipfsUp = false;
