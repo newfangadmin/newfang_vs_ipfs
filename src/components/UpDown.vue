@@ -224,7 +224,9 @@
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = "ipfs-"+this.fileName;
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
         let end = Date.now();
         this.ipfsDown = false;
         this.ipfsDownTime = (end - start) / 1000;
