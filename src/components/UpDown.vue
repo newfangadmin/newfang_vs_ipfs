@@ -223,7 +223,7 @@
         var blob = new Blob([result[0].content], {type: this.fileType});
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
-        link.download = this.fileName + "_ipfs";
+        link.download = "ipfs-"+this.fileName;
         link.click();
         let end = Date.now();
         this.ipfsDown = false;
@@ -250,11 +250,11 @@
         downloader.on('download_complete', () => {
           let end = Date.now();
           this.nfDown = false;
-          this.nfDownTime = (end - start) / 1000
+          this.nfDownTime = (end - start) / 1000;
           this.downloadTransaction();
 
         });
-        downloader.start_download(this.fileName + '_newfang.' + this.fileType)
+        downloader.start_download("newfang-"+this.fileName)
 
         // on success, update this.nfDown, this.active to false
         // write to db
